@@ -1,0 +1,11 @@
+fastapi~=0.63.0
+pydantic[dotenv]~=1.8.2
+uvicorn[standard]>=0.12.1
+gunicorn
+databases~=0.4.1
+sqlalchemy~=1.3.23
+aiomysql
+pyyaml>=5.4.1
+loguru>=0.5.3
+aiohttp>=3.7
+pydes>=2.0.1

@@ -1,0 +1,1 @@
+insert_log: "insert into log(user, req, res, time) values(:user, :req, :res, now())"
