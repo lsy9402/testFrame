@@ -1,7 +1,10 @@
+from importlib import import_module
+
 from fastapi import APIRouter, Request, Query
 
 from core.config import settings
 from db.base import execute
+from db.test_tools import tools_map, checks_map
 from schemas.public import Public_X1, Public_Y1, Public_Z1
 from utils.HttpUtil import send_post
 from utils.LogUtil import add_log
@@ -27,9 +30,48 @@ async def build_public(env: settings.ENV, input_data: Public_X1, req: Request) -
                      **input_data.copy(deep=True).dict())
 
 
-async def run_test(data: Public_Y1):
+def get_info(info) -> (str, dict):
+    if isinstance(info, str):
+        return info, {}
+    elif isinstance(info, dict):
+        for k, v in info.items():
+            return k, v
+    else:
+        raise Exception
+
+
+def run_tools(tools: list) -> list:
+    tools_info = []
+    for tool in tools:
+        tool_name, tool_args = get_info(tool)
+        _tool = tools_map.get(tool_name)
+        tools_info.append(getattr(import_module(_tool.module), _tool.func)(**tool_args))
+    return tools_info
+
+
+def checks_get_data(checks: list) -> list:
+    checks_info = []
+    for check in checks:
+        check_name, check_args = get_info(check)
+        _check = checks_map.get(check_name)
+        if _check.get_data:
+            checks_info.append(getattr(import_module(_check.module), _check.get_data)(**check_args))
+        else:
+            checks_info.append(None)
+    return checks_info
+
+
+def run_check(posts, checks_info, checks) -> bool:
+    return True
+
+
+async def run_test(data: Public_Y1) -> Public_Y1:
+    data.tools = run_tools(data.tools)
+    checks_info = []
     for post in data.posts:
-        post.status, post.res = await send_post(post.url, post.data)
+        checks_info.append(checks_get_data(data.checks))
+        post.status, post.res = await send_post(post.url, post.data, headers=post.headers)
+    data.result = run_check(data.posts, checks_info, data.checks)
     return data
 
 
