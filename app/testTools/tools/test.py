@@ -17,7 +17,7 @@ def get_user(*args, **kwargs):
 
 
 @add_tool(name="获取用户密码")
-def get_user(username, *args, **kwargs):
+def get_user_password(username, *args, **kwargs):
     table = {
         "test": {
             "username": "test",

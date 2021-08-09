@@ -1,9 +1,10 @@
+from aioredis import create_redis_pool, Redis
 from databases import Database
 from sqlalchemy import create_engine, MetaData, Table, Column, String, JSON, TIMESTAMP
 
 from core.config import settings, database_driven
 
-__all__ = ["db", "fetch_all", "db_init", "execute"]
+__all__ = ["db", "fetch_all", "db_init", "execute", "get_redis", "close_redis"]
 
 # 数据库类型://用户名:密码@IP地址:端口号/数据库名
 db = Database(f"{settings.DB_TYPE}://{settings.DB_USER}:{settings.DB_PASSWORD}@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}")
@@ -29,3 +30,21 @@ def db_init():
           comment="日志表"
           )
     metadata.create_all(engine)
+
+
+redis: Redis = None
+
+
+async def get_redis():
+    global redis
+    if redis is None:
+        redis = await create_redis_pool(address=(settings.DB_HOST, settings.REDIS_PORT))
+    return redis
+
+
+async def close_redis():
+    global redis
+    if redis:
+        await redis.save()
+        redis.close()
+        await redis.wait_closed()
