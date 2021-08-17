@@ -63,6 +63,7 @@ class Settings(BaseSettings):
 
     DB_HOST: str
     DB_PORT: int
+    REDIS_HOST: str
     REDIS_PORT: int
     DB_NAME: str
 

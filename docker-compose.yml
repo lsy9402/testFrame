@@ -1,5 +1,8 @@
 version: "3.8"
 services:
+  redis:
+    image: redis
+    container_name: Redis
   nginx:
     image: nginx
     container_name: Nginx
@@ -14,3 +17,5 @@ services:
     container_name: testFrame
     volumes:
       - ./app:/app
+    links:
+      - redis
