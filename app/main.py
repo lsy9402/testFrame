@@ -19,7 +19,7 @@ app = FastAPI()
 
 @app.middleware("http")
 async def add_log(request: Request, call_next):
-    user = request.client.host if request.client.host != "127.0.0.1" else settings.LOCALHOST
+    user = request.headers.get("x-host", request.client.host) if request.headers.get("x-host", request.client.host) != "127.0.0.1" else settings.LOCALHOST
     path = get_path_with_query_string(request.scope)
     logger.success("{} startup- {}", user, path)
     start_time = perf_counter()

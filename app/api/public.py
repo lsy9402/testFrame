@@ -50,7 +50,7 @@ class Public(Public_Y1):
             check_name, check_args = get_info(check)
             _check = checks_map.get(check_name)
             if _check.get_data:
-                checks_info.append(getattr(import_module(_check.module), _check.get_data)(**check_args))
+                checks_info.append(getattr(import_module(_check.module), _check.get_data)(**check_args, post=post))
             else:
                 checks_info.append(None)
         return checks_info
@@ -58,18 +58,21 @@ class Public(Public_Y1):
     def load_data(self, post: Res):
         def _load(data: object) -> object:
             if isinstance(data, dict):
+                _data = {}
                 for k, v in data.items():
-                    data[k] = _load(v)
+                    if "__" in k:
+                        k = k.split("__")[0]
+                    _data[k] = _load(v)
+                return _data
             elif isinstance(data, list):
-                for item in data:
-                    _load(item)
+                return [_load(item) for item in data]
             elif isinstance(data, str) and data.startswith("$"):
                 ret = jsonpath(self.tools, data)
                 return (ret and ret[0]) or data
             else:
                 return data
 
-        _load(post.data)
+        post.data = _load(post.data)
 
     def run_check(self, checks_info) -> bool:
         return True

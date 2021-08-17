@@ -1,9 +1,16 @@
 version: "3.8"
 services:
-  app:
-    build: .
-    container_name: testFrame
+  nginx:
+    image: nginx
+    container_name: Nginx
     ports:
       - 8080:8080
+    volumes:
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+    links:
+      - app
+  app:
+    build: ./app
+    container_name: testFrame
     volumes:
       - ./app:/app
