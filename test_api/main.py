@@ -1,6 +1,5 @@
 from fastapi import FastAPI, Body, Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from loguru import logger
 
 app = FastAPI()
 
@@ -37,8 +36,6 @@ def test(body: dict = Body(...), token: str = Depends(oauth2_scheme)):
 
 
 if __name__ == '__main__':
-    # from uvicorn import run
-    #
-    # run("main:app")
-    print(logger.level("SUCCESS"))
-    logger.info("SUCCESS")
+    from uvicorn import run
+
+    run("main:app", port=9000)
