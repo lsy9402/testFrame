@@ -38,7 +38,7 @@ redis: Redis = None
 async def get_redis():
     global redis
     if redis is None:
-        redis = await create_redis_pool(address=(settings.REDIS_HOST, settings.REDIS_PORT))
+        redis = await create_redis_pool(address=(settings.REDIS_HOST, settings.REDIS_PORT), password=settings.REDIS_PASSWORD)
     return redis
 
 

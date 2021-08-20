@@ -65,6 +65,7 @@ class Settings(BaseSettings):
     DB_PORT: int
     REDIS_HOST: str
     REDIS_PORT: int
+    REDIS_PASSWORD: str = None
     DB_NAME: str
 
     LOCALHOST: str = Field(default_factory=get_host_ip)
