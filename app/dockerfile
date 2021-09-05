@@ -2,8 +2,9 @@ FROM python:3.8
 
 ADD requirements.txt .
 RUN pip install -r requirements.txt
+ADD supervisor_gunicorn.conf .
 ENV ENV_FILE .env.docker
 
 WORKDIR /app
 
-CMD gunicorn -c gunicorn_config.py main:app
+CMD supervisord -c /supervisor_gunicorn.conf
